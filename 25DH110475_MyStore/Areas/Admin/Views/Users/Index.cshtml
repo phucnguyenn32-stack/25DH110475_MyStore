@@ -1,0 +1,71 @@
+﻿@model PagedList.IPagedList<_25DH110475_MyStore.Models.User>
+
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@using (Html.BeginForm("Index", "Users", FormMethod.Get))
+{
+    <input type="text"
+           name="searchString"
+           value="@ViewBag.SearchString"
+           class="form-control"
+           placeholder="Tìm username hoặc role..." />
+
+    <br />
+
+    <input type="submit"
+           value="Tìm kiếm"
+           class="btn btn-primary" />
+}
+
+<br />
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Username
+        </th>
+        <th>
+            Password
+        </th>
+        <th>
+            User Role
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserRole)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Username }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Username }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Username })
+            </td>
+        </tr>
+    }
+</table>
+
+@Html.PagedListPager(
+    Model,
+    page => Url.Action("Index", new
+    {
+        page,
+        searchString = ViewBag.SearchString
+    })
+)

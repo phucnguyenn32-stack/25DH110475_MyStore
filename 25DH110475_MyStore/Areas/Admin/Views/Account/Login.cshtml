@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập";
+}
+
+<h2>Đăng nhập Admin</h2>
+
+@using (Html.BeginForm("Login", "Account", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label>Tên đăng nhập</label>
+        <input type="text" name="username" class="form-control" />
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" name="password" class="form-control" />
+    </div>
+
+    <br />
+
+    <input type="submit" value="Đăng nhập" class="btn btn-primary" />
+
+    if (ViewBag.Error != null)
+    {
+        <p style="color:red; margin-top:10px;">
+            @ViewBag.Error
+        </p>
+    }
+}

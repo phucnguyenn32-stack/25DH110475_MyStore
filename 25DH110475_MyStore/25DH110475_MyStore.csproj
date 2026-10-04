@@ -53,6 +53,12 @@
       <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -130,6 +136,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AccountController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CategoriesController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CustomersController.cs" />
+    <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrdersController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UsersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -164,12 +177,14 @@
     <Compile Include="Models\Product.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProductMetadata.cs" />
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModel\SearchProductVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +204,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -216,6 +232,37 @@
       <DependentUpon>Model1.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Categories\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Categories\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Categories\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Categories\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Categories\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\PVListProduct.cshtml" />
+    <Content Include="Areas\Admin\Views\Customers\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Customers\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Customers\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Customers\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Customers\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Users\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Users\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Users\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Users\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Users\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Account\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -244,9 +291,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
+    <Folder Include="Content\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

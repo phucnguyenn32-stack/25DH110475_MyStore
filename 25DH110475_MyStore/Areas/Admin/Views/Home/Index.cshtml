@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Admin Home";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Admin Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h4>Danh mục</h4>
+            <h2>@ViewBag.CategoryCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h4>Sản phẩm</h4>
+            <h2>@ViewBag.ProductCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h4>Khách hàng</h4>
+            <h2>@ViewBag.CustomerCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h4>Đơn hàng</h4>
+            <h2>@ViewBag.OrderCount</h2>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h3>Thống kê hệ thống</h3>
+
+<div id="chart_div" style="width: 100%; height: 400px;"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script>
+    google.charts.load('current', { packages: ['corechart'] });
+
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Loại', 'Số lượng'],
+            ['Danh mục', @ViewBag.CategoryCount],
+            ['Sản phẩm', @ViewBag.ProductCount],
+            ['Khách hàng', @ViewBag.CustomerCount],
+            ['Đơn hàng', @ViewBag.OrderCount]
+        ]);
+
+        var options = {
+            title: 'Thống kê hệ thống',
+            is3D: true
+        };
+
+        var chart = new google.visualization.PieChart(
+            document.getElementById('chart_div')
+        );
+
+        chart.draw(data, options);
+    }
+</script>
