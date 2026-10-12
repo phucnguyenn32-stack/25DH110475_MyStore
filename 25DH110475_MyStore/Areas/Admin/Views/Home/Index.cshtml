@@ -1,47 +1,188 @@
 ﻿@{
-    ViewBag.Title = "Admin Home";
+    ViewBag.Title = "Admin Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Admin Dashboard</h2>
+<style>
+    .dashboard-header {
+        margin-bottom: 25px;
+    }
+
+        .dashboard-header h2 {
+            font-weight: 700;
+            color: #263445;
+            margin-bottom: 8px;
+        }
+
+    .dashboard-subtitle {
+        color: #7b8794;
+        font-size: 14px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 20px;
+        border: 1px solid #e7ebf0;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        min-height: 145px;
+    }
+
+    .stat-label {
+        color: #6b7785;
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        color: #263445;
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stat-icon {
+        font-size: 25px;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-panel {
+        background: #fff;
+        border: 1px solid #e7ebf0;
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    }
+
+        .dashboard-panel h3 {
+            color: #263445;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+    .quick-link {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid #e7ebf0;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        color: #34495e;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+        .quick-link:hover {
+            background: #f3f7fb;
+            text-decoration: none;
+            color: #1674c5;
+        }
+
+        .quick-link strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .quick-link small {
+            color: #7b8794;
+        }
+
+    #chart_div {
+        width: 100%;
+        min-height: 330px;
+    }
+</style>
+
+<div class="dashboard-header">
+    <h2>Admin Dashboard</h2>
+    <p class="dashboard-subtitle">
+        Tổng quan dữ liệu và hoạt động của hệ thống MyStore.
+    </p>
+</div>
 
 <div class="row">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h4>Danh mục</h4>
-            <h2>@ViewBag.CategoryCount</h2>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon">&#128193;</div>
+            <div class="stat-label">Danh mục</div>
+            <p class="stat-number">@ViewBag.CategoryCount</p>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h4>Sản phẩm</h4>
-            <h2>@ViewBag.ProductCount</h2>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon">&#128230;</div>
+            <div class="stat-label">Sản phẩm</div>
+            <p class="stat-number">@ViewBag.ProductCount</p>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h4>Khách hàng</h4>
-            <h2>@ViewBag.CustomerCount</h2>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon">&#128101;</div>
+            <div class="stat-label">Khách hàng</div>
+            <p class="stat-number">@ViewBag.CustomerCount</p>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h4>Đơn hàng</h4>
-            <h2>@ViewBag.OrderCount</h2>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon">&#128722;</div>
+            <div class="stat-label">Đơn hàng</div>
+            <p class="stat-number">@ViewBag.OrderCount</p>
         </div>
     </div>
 </div>
 
-<hr />
+<div class="row">
+    <div class="col-md-8">
+        <div class="dashboard-panel">
+            <h3>Thống kê hệ thống</h3>
+            <div id="chart_div"></div>
+        </div>
+    </div>
 
-<h3>Thống kê hệ thống</h3>
+    <div class="col-md-4">
+        <div class="dashboard-panel">
+            <h3>Quản lý nhanh</h3>
 
-<div id="chart_div" style="width: 100%; height: 400px;"></div>
+            <a href="@Url.Action("Index", "Categories", new { area = "Admin" })"
+               class="quick-link">
+                <strong>Quản lý danh mục</strong>
+                <small>Xem và cập nhật danh mục sản phẩm</small>
+            </a>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <a href="@Url.Action("Index", "Products", new { area = "Admin" })"
+               class="quick-link">
+                <strong>Quản lý sản phẩm</strong>
+                <small>Thêm, sửa và xóa sản phẩm</small>
+            </a>
+
+            <a href="@Url.Action("Index", "Customers", new { area = "Admin" })"
+               class="quick-link">
+                <strong>Quản lý khách hàng</strong>
+                <small>Xem danh sách khách hàng</small>
+            </a>
+
+            <a href="@Url.Action("Index", "Orders", new { area = "Admin" })"
+               class="quick-link">
+                <strong>Quản lý đơn hàng</strong>
+                <small>Kiểm tra danh sách đơn hàng</small>
+            </a>
+
+            <a href="@Url.Action("Index", "Users", new { area = "Admin" })"
+               class="quick-link">
+                <strong>Quản lý tài khoản</strong>
+                <small>Quản lý người dùng hệ thống</small>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script>
     google.charts.load('current', { packages: ['corechart'] });
@@ -50,16 +191,24 @@
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Loại', 'Số lượng'],
-            ['Danh mục', @ViewBag.CategoryCount],
-            ['Sản phẩm', @ViewBag.ProductCount],
-            ['Khách hàng', @ViewBag.CustomerCount],
-            ['Đơn hàng', @ViewBag.OrderCount]
+            ['Loại dữ liệu', 'Số lượng'],
+            ['Danh mục', @(ViewBag.CategoryCount ?? 0)],
+            ['Sản phẩm', @(ViewBag.ProductCount ?? 0)],
+            ['Khách hàng', @(ViewBag.CustomerCount ?? 0)],
+            ['Đơn hàng', @(ViewBag.OrderCount ?? 0)]
         ]);
 
         var options = {
-            title: 'Thống kê hệ thống',
-            is3D: true
+            title: 'Tỷ lệ dữ liệu theo nhóm',
+            pieHole: 0.35,
+            chartArea: {
+                width: '90%',
+                height: '75%'
+            },
+            legend: {
+                position: 'bottom'
+            },
+            height: 330
         };
 
         var chart = new google.visualization.PieChart(
@@ -68,4 +217,10 @@
 
         chart.draw(data, options);
     }
+
+    window.addEventListener('resize', function () {
+        if (typeof drawChart === 'function') {
+            drawChart();
+        }
+    });
 </script>

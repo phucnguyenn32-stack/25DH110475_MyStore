@@ -1,120 +1,190 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - MyStore Admin</title>
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        body {
+            margin: 0;
+            background: #f4f6f9;
+            color: #263445;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .admin-navbar {
+            background: #202b3c;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 28px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+            .admin-navbar .container {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+        .admin-brand {
+            color: #fff !important;
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 18px 20px 18px 0;
+            text-decoration: none !important;
+        }
+
+            .admin-brand span {
+                color: #55b5ff;
+            }
+
+        .admin-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+            .admin-menu li a {
+                display: block;
+                color: #d5dce7;
+                padding: 19px 12px;
+                font-size: 13px;
+                text-decoration: none;
+                transition: background 0.2s, color 0.2s;
+            }
+
+                .admin-menu li a:hover,
+                .admin-menu li a:focus {
+                    background: #34445b;
+                    color: #fff;
+                }
+
+            .admin-menu li.logout-link a {
+                color: #ffb4b4;
+            }
+
+                .admin-menu li.logout-link a:hover {
+                    background: #7c3038;
+                    color: #fff;
+                }
+
+        .admin-user {
+            color: #c8d2df;
+            font-size: 12px;
+            margin-left: auto;
+            padding: 10px 0 10px 15px;
+        }
+
+            .admin-user strong {
+                color: #fff;
+            }
+
+        .admin-main {
+            min-height: calc(100vh - 150px);
+        }
+
+        .admin-footer {
+            color: #7b8794;
+            font-size: 13px;
+            margin-top: 35px;
+            padding: 20px 0;
+            border-top: 1px solid #e1e6ed;
+        }
+
+        @@media (max-width: 767px) {
+            .admin-navbar .container {
+                display: block;
+            }
+
+            .admin-brand {
+                display: block;
+                padding: 15px 0;
+            }
+
+            .admin-menu {
+                display: block;
+            }
+
+                .admin-menu li a {
+                    padding: 10px 12px;
+                }
+
+            .admin-user {
+                display: block;
+                margin: 0;
+                padding: 12px 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar admin-navbar">
         <div class="container">
-
             @Html.ActionLink(
-                "ADMIN",
+                "MYSTORE",
                 "Index",
                 "Home",
                 new { area = "Admin" },
-                new { @class = "navbar-brand" }
+                new { @class = "navbar-brand admin-brand" }
             )
 
-            <div class="navbar-collapse">
-                <ul class="navbar-nav">
+            <ul class="admin-menu">
+                <li>
+                    @Html.ActionLink("Dashboard", "Index", "Home",
+                        new { area = "Admin" }, null)
+                </li>
+                <li>
+                    @Html.ActionLink("Danh mục", "Index", "Categories",
+                        new { area = "Admin" }, null)
+                </li>
+                <li>
+                    @Html.ActionLink("Sản phẩm", "Index", "Products",
+                        new { area = "Admin" }, null)
+                </li>
+                <li>
+                    @Html.ActionLink("Khách hàng", "Index", "Customers",
+                        new { area = "Admin" }, null)
+                </li>
+                <li>
+                    @Html.ActionLink("Đơn hàng", "Index", "Orders",
+                        new { area = "Admin" }, null)
+                </li>
+                <li>
+                    @Html.ActionLink("Tài khoản", "Index", "Users",
+                        new { area = "Admin" }, null)
+                </li>
+                <li class="logout-link">
+                    @Html.ActionLink("Đăng xuất", "Logout", "Account",
+                        new { area = "Admin" }, null)
+                </li>
+            </ul>
 
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Trang chủ",
-                            "Index",
-                            "Home",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Danh mục",
-                            "Index",
-                            "Categories",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Sản phẩm",
-                            "Index",
-                            "Products",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Khách hàng",
-                            "Index",
-                            "Customers",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Đơn hàng",
-                            "Index",
-                            "Orders",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Tài khoản",
-                            "Index",
-                            "Users",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                    <li class="nav-item">
-                        @Html.ActionLink(
-                            "Đăng xuất",
-                            "Logout",
-                            "Account",
-                            new { area = "Admin" },
-                            new { @class = "nav-link" }
-                        )
-                    </li>
-
-                </ul>
+            <div class="admin-user">
+                Xin chào,
+                <strong>@(Session["Username"] ?? "Admin")</strong>
             </div>
         </div>
     </nav>
 
-    <div class="container body-content">
-
+    <main class="container admin-main">
         @RenderBody()
+    </main>
 
-        <hr />
-
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Admin</p>
-        </footer>
-
-    </div>
+    <footer class="container admin-footer">
+        <p>&copy; @DateTime.Now.Year MyStore | Trang quản trị hệ thống</p>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-
 </body>
 </html>

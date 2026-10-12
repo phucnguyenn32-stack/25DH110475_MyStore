@@ -1,40 +1,26 @@
 ﻿@model _25DH110475_MyStore.Models.User
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Xóa tài khoản";
 }
 
-<h2>Delete</h2>
+<h2>Xóa tài khoản</h2>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
+<h4>Bạn có chắc chắn muốn xóa tài khoản này không?</h4>
+<hr />
 
-        <dd>
-            @Html.DisplayFor(model => model.Password)
-        </dd>
+<dl class="dl-horizontal">
+    <dt>Username</dt>
+    <dd>@Model.Username</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.UserRole)
-        </dt>
+    <dt>Quyền tài khoản</dt>
+    <dd>@Model.UserRole</dd>
+</dl>
 
-        <dd>
-            @Html.DisplayFor(model => model.UserRole)
-        </dd>
+@using (Html.BeginForm("Delete", "Users", new { id = Model.Username }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-    </dl>
-
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
-        </div>
-    }
-</div>
+    <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
+    @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-default" })
+}

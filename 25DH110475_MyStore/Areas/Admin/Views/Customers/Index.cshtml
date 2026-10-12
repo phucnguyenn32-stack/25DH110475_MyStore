@@ -1,57 +1,308 @@
 ﻿@model IEnumerable<_25DH110475_MyStore.Models.Customer>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Index</h2>
+<style>
+    .customers-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerPhone)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerEmail)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerAddress)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </th>
-        <th></th>
-    </tr>
+    .customers-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.CustomerName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CustomerPhone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CustomerEmail)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CustomerAddress)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.Password)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CustomerID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.CustomerID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.CustomerID })
-        </td>
-    </tr>
+        .customers-heading h2 {
+            color: #263445;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 6px;
+        }
+
+        .customers-heading p {
+            color: #7b8794;
+            margin-bottom: 0;
+        }
+
+    .customers-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .customers-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .customers-search {
+        width: 100%;
+        max-width: 500px;
+    }
+
+        .customers-search .form-control {
+            height: 40px;
+            border-radius: 6px;
+        }
+
+    .customers-table-wrap {
+        overflow-x: auto;
+    }
+
+    .customers-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+        .customers-table thead {
+            background: #f8fafc;
+        }
+
+        .customers-table th {
+            color: #536273;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 15px !important;
+            border-bottom: 1px solid #e4e9ef !important;
+        }
+
+        .customers-table td {
+            padding: 15px !important;
+            vertical-align: middle !important;
+            color: #344256;
+        }
+
+        .customers-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+    .customer-name {
+        color: #263445;
+        font-weight: 600;
+    }
+
+    .customer-email {
+        overflow-wrap: anywhere;
+    }
+
+    .customer-account {
+        display: inline-block;
+        padding: 5px 9px;
+        background: #eef4ff;
+        color: #2859a5;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .customer-actions {
+        white-space: nowrap;
+    }
+
+        .customer-actions .btn {
+            margin: 2px;
+            border-radius: 5px;
+        }
+
+    .customers-footer {
+        padding: 15px 20px;
+        color: #7b8794;
+        border-top: 1px solid #edf0f4;
+        font-size: 13px;
+    }
+
+    .customers-empty {
+        text-align: center;
+        padding: 40px 20px !important;
+        color: #7b8794 !important;
+    }
+
+    @@media (max-width: 767px) {
+        .customers-heading .btn {
+            width: 100%;
+        }
+
+        .customers-toolbar {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="customers-page">
+    <div class="customers-heading">
+        <div>
+            <h2>Quản lý khách hàng</h2>
+            <p>Quản lý thông tin liên hệ và tài khoản khách hàng.</p>
+        </div>
+
+        @Html.ActionLink(
+            "+ Thêm khách hàng",
+            "Create",
+            null,
+            new { @class = "btn btn-success" })
+    </div>
+
+    <div class="customers-card">
+        <div class="customers-toolbar">
+            <div class="customers-search">
+                <input type="text"
+                       id="customerSearch"
+                       class="form-control"
+                       placeholder="Tìm tên, số điện thoại, email hoặc tài khoản..." />
+            </div>
+
+            <span class="text-muted">
+                Tổng khách hàng: @(Model == null ? 0 : Model.Count())
+            </span>
+        </div>
+
+        <div class="customers-table-wrap">
+            <table class="table customers-table" id="customersTable">
+                <thead>
+                    <tr>
+                        <th>MÃ KHÁCH HÀNG</th>
+                        <th>HỌ TÊN</th>
+                        <th>ĐIỆN THOẠI</th>
+                        <th>EMAIL</th>
+                        <th>ĐỊA CHỈ</th>
+                        <th>TÀI KHOẢN</th>
+                        <th>THAO TÁC</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="customer-row">
+                                <td>#@item.CustomerID</td>
+
+                                <td>
+                                    <span class="customer-name">
+                                        @item.CustomerName
+                                    </span>
+                                </td>
+
+                                <td>@item.CustomerPhone</td>
+
+                                <td class="customer-email">
+                                    @item.CustomerEmail
+                                </td>
+
+                                <td>@item.CustomerAddress</td>
+
+                                <td>
+                                    @if (item.User != null)
+                                    {
+                                        <span class="customer-account">
+                                            @item.User.Username
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa liên kết</span>
+                                    }
+                                </td>
+
+                                <td class="customer-actions">
+                                    @Html.ActionLink(
+                                        "Chi tiết",
+                                        "Details",
+                                        new { id = item.CustomerID },
+                                        new { @class = "btn btn-info btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Sửa",
+                                        "Edit",
+                                        new { id = item.CustomerID },
+                                        new { @class = "btn btn-warning btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Xóa",
+                                        "Delete",
+                                        new { id = item.CustomerID },
+                                        new { @class = "btn btn-danger btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="customers-empty">
+                                Chưa có dữ liệu khách hàng.
+                            </td>
+                        </tr>
+                    }
+
+                    <tr id="customerNoResults" style="display: none;">
+                        <td colspan="7" class="customers-empty">
+                            Không tìm thấy khách hàng phù hợp.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="customers-footer">
+            Danh sách khách hàng trong hệ thống
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+                (function () {
+                    var searchInput = document.getElementById("customerSearch");
+                    var tableElement = document.getElementById("customersTable");
+                    var noResultsElement = document.getElementById("customerNoResults");
+
+                    if (!searchInput || !tableElement) {
+                        return;
+                    }
+
+                    var input = searchInput;
+                    var table = tableElement;
+                    var noResults = noResultsElement;
+
+                    input.addEventListener("input", function () {
+                        var keyword = input.value.toLowerCase().trim();
+                        var rows = table.querySelectorAll("tbody tr.customer-row");
+                        var visibleCount = 0;
+
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            var rowText = row.textContent || "";
+                            var matched = rowText.toLowerCase().indexOf(keyword) !== -1;
+
+                            if (matched) {
+                                row.removeAttribute("hidden");
+                                visibleCount++;
+                            } else {
+                                row.setAttribute("hidden", "hidden");
+                            }
+                        }
+
+                        if (noResults) {
+                            noResults.style.display =
+                                rows.length > 0 && visibleCount === 0 ? "" : "none";
+                        }
+                    });
+                })();
+    </script>
 }
-
-</table>

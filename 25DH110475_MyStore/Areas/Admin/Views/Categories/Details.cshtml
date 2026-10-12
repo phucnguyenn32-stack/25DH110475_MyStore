@@ -1,26 +1,138 @@
 ﻿@model _25DH110475_MyStore.Models.Category
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Details</h2>
+<style>
+    .category-details-page {
+        max-width: 850px;
+        margin: 0 auto;
+    }
 
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.CategoryName)
-        </dt>
+    .category-details-heading {
+        margin-bottom: 22px;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.CategoryName)
-        </dd>
+        .category-details-heading h2 {
+            color: #263445;
+            font-weight: 700;
+        }
 
-    </dl>
+        .category-details-heading p {
+            color: #7b8794;
+        }
+
+    .category-details-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        padding: 28px;
+    }
+
+    .category-details-icon {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eaf2ff;
+        color: #2864c5;
+        border-radius: 14px;
+        font-size: 30px;
+        margin-bottom: 22px;
+    }
+
+    .category-details-row {
+        padding: 17px 0;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .category-details-label {
+        display: block;
+        color: #7b8794;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .category-details-value {
+        color: #263445;
+        font-size: 16px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .category-details-id {
+        display: inline-block;
+        background: #f1f5f9;
+        color: #536273;
+        border-radius: 6px;
+        padding: 7px 12px;
+    }
+
+    .category-details-actions {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #edf0f4;
+    }
+
+        .category-details-actions .btn {
+            margin: 3px 5px 3px 0;
+        }
+
+    @@media (max-width: 767px) {
+        .category-details-card {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-details-page">
+    <div class="category-details-heading">
+        <h2>Chi tiết danh mục</h2>
+        <p>Xem thông tin danh mục trong hệ thống cửa hàng.</p>
+    </div>
+
+    <div class="category-details-card">
+        <div class="category-details-icon">
+            <span class="glyphicon glyphicon-folder-open"></span>
+        </div>
+
+        <div class="category-details-row">
+            <span class="category-details-label">Mã danh mục</span>
+            <div class="category-details-value">
+                <span class="category-details-id">
+                    #@Model.CategoryID
+                </span>
+            </div>
+        </div>
+
+        <div class="category-details-row">
+            <span class="category-details-label">Tên danh mục</span>
+            <div class="category-details-value">
+                @Model.CategoryName
+            </div>
+        </div>
+
+        <div class="category-details-actions">
+            @Html.ActionLink(
+                "Chỉnh sửa",
+                "Edit",
+                new { id = Model.CategoryID },
+                new { @class = "btn btn-warning" })
+
+            @Html.ActionLink(
+                "Xóa danh mục",
+                "Delete",
+                new { id = Model.CategoryID },
+                new { @class = "btn btn-danger" })
+
+            @Html.ActionLink(
+                "Quay lại danh sách",
+                "Index",
+                null,
+                new { @class = "btn btn-default" })
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.CategoryID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

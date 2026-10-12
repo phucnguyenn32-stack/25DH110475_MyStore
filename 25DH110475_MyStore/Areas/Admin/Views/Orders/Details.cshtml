@@ -1,58 +1,196 @@
 ﻿@model _25DH110475_MyStore.Models.Order
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Details</h2>
+<style>
+    .order-details-page {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
+    .order-details-heading {
+        margin-bottom: 24px;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
+        .order-details-heading h2 {
+            color: #263445;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
+        .order-details-heading p {
+            color: #7b8794;
+            margin: 0;
+        }
 
-        <dd>
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
+    .order-details-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.PaymentStatus)
-        </dt>
+    .order-details-card-header {
+        padding: 18px 22px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e4e9ef;
+        font-weight: 700;
+        color: #263445;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.PaymentStatus)
-        </dd>
+    .order-details-body {
+        padding: 24px;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.AddressDelivery)
-        </dt>
+    .order-detail-row {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 16px;
+        padding: 15px 0;
+        border-bottom: 1px solid #edf0f4;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.AddressDelivery)
-        </dd>
+        .order-detail-row:last-child {
+            border-bottom: none;
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Customer.CustomerName)
-        </dt>
+    .order-detail-label {
+        color: #7b8794;
+        font-weight: 600;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Customer.CustomerName)
-        </dd>
+    .order-detail-value {
+        color: #263445;
+        overflow-wrap: anywhere;
+    }
 
-    </dl>
+    .order-detail-id {
+        color: #2859a5;
+        font-weight: 700;
+    }
+
+    .order-detail-amount {
+        color: #198754;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .order-detail-status {
+        display: inline-block;
+        padding: 6px 10px;
+        background: #eef4ff;
+        color: #2859a5;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .order-details-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+        .order-details-actions .btn {
+            border-radius: 6px;
+        }
+
+    @@media (max-width: 600px) {
+        .order-details-body {
+            padding: 16px;
+        }
+
+        .order-detail-row {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+    }
+</style>
+
+<div class="order-details-page">
+    <div class="order-details-heading">
+        <h2>Chi tiết đơn hàng #@Model.OrderID</h2>
+        <p>Thông tin khách hàng, thanh toán và giao hàng.</p>
+    </div>
+
+    <div class="order-details-card">
+        <div class="order-details-card-header">
+            Thông tin đơn hàng
+        </div>
+
+        <div class="order-details-body">
+            <div class="order-detail-row">
+                <div class="order-detail-label">Mã đơn hàng</div>
+                <div class="order-detail-value order-detail-id">
+                    #@Model.OrderID
+                </div>
+            </div>
+
+            <div class="order-detail-row">
+                <div class="order-detail-label">Khách hàng</div>
+                <div class="order-detail-value">
+                    @(Model.Customer != null
+                        ? Model.Customer.CustomerName
+                        : "Chưa có thông tin khách hàng")
+                </div>
+            </div>
+
+            <div class="order-detail-row">
+                <div class="order-detail-label">Ngày đặt hàng</div>
+                <div class="order-detail-value">
+                    @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+
+            <div class="order-detail-row">
+                <div class="order-detail-label">Tổng tiền</div>
+                <div class="order-detail-value order-detail-amount">
+                    @String.Format("{0:N0} đ", Model.TotalAmount)
+                </div>
+            </div>
+
+            <div class="order-detail-row">
+                <div class="order-detail-label">Trạng thái thanh toán</div>
+                <div class="order-detail-value">
+                    <span class="order-detail-status">
+                        @(String.IsNullOrWhiteSpace(Model.PaymentStatus)
+                            ? "Chưa cập nhật"
+                            : Model.PaymentStatus)
+                    </span>
+                </div>
+            </div>
+
+            <div class="order-detail-row">
+                <div class="order-detail-label">Địa chỉ giao hàng</div>
+                <div class="order-detail-value">
+                    @(String.IsNullOrWhiteSpace(Model.AddressDelivery)
+                        ? "Chưa có địa chỉ giao hàng"
+                        : Model.AddressDelivery)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-details-actions">
+        @Html.ActionLink(
+            "Quay lại danh sách",
+            "Index",
+            null,
+            new { @class = "btn btn-default" })
+
+        @Html.ActionLink(
+            "Chỉnh sửa đơn hàng",
+            "Edit",
+            new { id = Model.OrderID },
+            new { @class = "btn btn-warning" })
+
+        @Html.ActionLink(
+            "Xóa đơn hàng",
+            "Delete",
+            new { id = Model.OrderID },
+            new { @class = "btn btn-danger" })
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.OrderID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

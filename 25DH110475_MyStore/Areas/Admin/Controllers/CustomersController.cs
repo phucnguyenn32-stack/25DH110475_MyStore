@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using _25DH110475_MyStore.Models;
+using _25DH110475_MyStore.Areas.Admin.Filters;
 
 namespace _25DH110475_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class CustomersController : Controller
     {
         private MystoreEntities db = new MystoreEntities();

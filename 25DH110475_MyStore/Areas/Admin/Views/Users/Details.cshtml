@@ -1,34 +1,22 @@
 ﻿@model _25DH110475_MyStore.Models.User
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết tài khoản";
 }
 
-<h2>Details</h2>
+<h2>Chi tiết tài khoản</h2>
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
+<hr />
 
-        <dd>
-            @Html.DisplayFor(model => model.Password)
-        </dd>
+<dl class="dl-horizontal">
+    <dt>Username</dt>
+    <dd>@Model.Username</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.UserRole)
-        </dt>
+    <dt>Quyền tài khoản</dt>
+    <dd>@Model.UserRole</dd>
+</dl>
 
-        <dd>
-            @Html.DisplayFor(model => model.UserRole)
-        </dd>
-
-    </dl>
-</div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Username }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.Username }, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
 </p>

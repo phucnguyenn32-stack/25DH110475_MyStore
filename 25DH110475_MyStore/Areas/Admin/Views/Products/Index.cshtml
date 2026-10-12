@@ -2,145 +2,338 @@
 @model _25DH110475_MyStore.Models.ViewModel.SearchProductVM
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Index</h2>
-@using (Html.BeginForm("Index", "Products", FormMethod.Get))
-{
-    <div class="form-group">
+<style>
+    .product-page-title {
+        margin-bottom: 22px;
+    }
 
-        @Html.TextBox("searchString", Model.SearchString, new
-        {
-            @class = "form-control",
-            placeholder = "Nhập tên sản phẩm..."
-        })
+        .product-page-title h2 {
+            font-weight: 700;
+            color: #263445;
+            margin-bottom: 7px;
+        }
 
-        <br />
+    .product-page-subtitle {
+        color: #7b8794;
+        margin-bottom: 0;
+    }
 
-        @Html.TextBox("minPrice", Model.MinPrice, new
-        {
-            @class = "form-control",
-            placeholder = "Giá từ"
-        })
+    .product-filter-panel {
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #e4e9ef;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
 
-        <br />
+        .product-filter-panel label {
+            font-weight: 600;
+            color: #344256;
+        }
 
-        @Html.TextBox("maxPrice", Model.MaxPrice, new
-        {
-            @class = "form-control",
-            placeholder = "Giá đến"
-        })
+    .product-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
 
-        <br />
+    .product-sort {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        align-items: center;
+    }
 
-        <input type="submit" value="Tìm kiếm" class="btn btn-primary" />
-    </div>
-}
-<div class="form-group">
-    <strong>Sắp xếp:</strong>
+    .product-table-panel {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 10px;
+        padding: 15px;
+        overflow-x: auto;
+    }
 
-    @Html.ActionLink("Tên A → Z", "Index",
-        new
+    .product-table {
+        margin-bottom: 0;
+        min-width: 800px;
+    }
+
+        .product-table thead {
+            background: #edf3f9;
+        }
+
+        .product-table th {
+            color: #344256;
+            white-space: nowrap;
+        }
+
+        .product-table td {
+            vertical-align: middle !important;
+        }
+
+    .product-image {
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        border: 1px solid #e4e9ef;
+        border-radius: 6px;
+        background: #fff;
+        padding: 3px;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #263445;
+    }
+
+    .product-description {
+        max-width: 230px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .product-price {
+        color: #147d54;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .product-actions {
+        white-space: nowrap;
+    }
+
+        .product-actions a {
+            margin: 2px;
+        }
+
+    .product-pagination {
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    .product-count {
+        color: #7b8794;
+        font-size: 13px;
+        margin-top: 12px;
+    }
+</style>
+
+<div class="product-page-title">
+    <h2>Quản lý sản phẩm</h2>
+    <p class="product-page-subtitle">
+        Tìm kiếm, lọc giá, sắp xếp và quản lý danh sách sản phẩm.
+    </p>
+</div>
+
+<div class="product-filter-panel">
+    @using (Html.BeginForm("Index", "Products", FormMethod.Get))
+    {
+        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="searchString">Từ khóa</label>
+                    @Html.TextBox("searchString", Model.SearchString, new
+                    {
+                        @class = "form-control",
+                        placeholder = "Tên, mô tả hoặc danh mục sản phẩm..."
+                    })
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="minPrice">Giá từ</label>
+                    @Html.TextBox("minPrice", Model.MinPrice, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "0",
+                        step = "any",
+                        placeholder = "Giá thấp nhất"
+                    })
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="maxPrice">Giá đến</label>
+                    @Html.TextBox("maxPrice", Model.MaxPrice, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "0",
+                        step = "any",
+                        placeholder = "Giá cao nhất"
+                    })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        Tìm kiếm
+                    </button>
+
+                    @Html.ActionLink("Làm mới", "Index", null,
+                        new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="product-toolbar">
+    <div class="product-sort">
+        <strong>Sắp xếp:</strong>
+
+        @Html.ActionLink("Tên A–Z", "Index", new
         {
             searchString = Model.SearchString,
             minPrice = Model.MinPrice,
             maxPrice = Model.MaxPrice,
             sortOrder = "name_asc"
-        },
-        new { @class = "btn btn-default" })
+        }, new { @class = "btn btn-default btn-sm" })
 
-    @Html.ActionLink("Tên Z → A", "Index",
-        new
+        @Html.ActionLink("Tên Z–A", "Index", new
         {
             searchString = Model.SearchString,
             minPrice = Model.MinPrice,
             maxPrice = Model.MaxPrice,
             sortOrder = "name_desc"
-        },
-        new { @class = "btn btn-default" })
+        }, new { @class = "btn btn-default btn-sm" })
 
-    @Html.ActionLink("Giá thấp → cao", "Index",
-        new
+        @Html.ActionLink("Giá tăng dần", "Index", new
         {
             searchString = Model.SearchString,
             minPrice = Model.MinPrice,
             maxPrice = Model.MaxPrice,
             sortOrder = "price_asc"
-        },
-        new { @class = "btn btn-default" })
+        }, new { @class = "btn btn-default btn-sm" })
 
-    @Html.ActionLink("Giá cao → thấp", "Index",
-        new
+        @Html.ActionLink("Giá giảm dần", "Index", new
         {
             searchString = Model.SearchString,
             minPrice = Model.MinPrice,
             maxPrice = Model.MaxPrice,
             sortOrder = "price_desc"
-        },
-        new { @class = "btn btn-default" })
+        }, new { @class = "btn btn-default btn-sm" })
+    </div>
+
+    @Html.ActionLink("+ Thêm sản phẩm", "Create", null,
+        new { @class = "btn btn-success" })
 </div>
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            Tên sản phẩm
-        </th>
-        <th>
-            Mô tả
-        </th>
-        <th>
-            Giá
-        </th>
-        <th>
-            Hình ảnh
-        </th>
-        <th>
-            Danh mục
-        </th>
-        <th></th>
-    </tr>
 
-    @foreach (var item in Model.Products)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductDecription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductImage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryName)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ProductID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ProductID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ProductID })
-            </td>
-        </tr>
-    }
+<div class="product-table-panel">
+    <table class="table table-bordered table-hover product-table">
+        <thead>
+            <tr>
+                <th style="width: 75px;">Mã</th>
+                <th style="width: 100px;">Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Mô tả</th>
+                <th>Giá</th>
+                <th>Danh mục</th>
+                <th style="width: 190px;">Thao tác</th>
+            </tr>
+        </thead>
 
-</table>
-<br />
+        <tbody>
+            @if (Model.Products != null && Model.Products.Any())
+            {
+                foreach (var item in Model.Products)
+                {
+                    <tr>
+                        <td>@item.ProductID</td>
 
-<div>
-    @Html.PagedListPager(
-        Model.Products,
-        page => Url.Action("Index", new
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ProductImage))
+                            {
+                                <img src="@Url.Content(item.ProductImage)"
+                                     alt="@item.ProductName"
+                                     class="product-image" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có ảnh</span>
+                            }
+                        </td>
+
+                        <td>
+                            <span class="product-name">@item.ProductName</span>
+                        </td>
+
+                        <td>
+                            <div class="product-description">
+                                @item.ProductDecription
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="product-price">
+                                @string.Format("{0:N0}", item.ProductPrice)
+                            </span>
+                        </td>
+
+                        <td>
+                            @(item.Category != null
+                                ? item.Category.CategoryName
+                                : "Chưa phân loại")
+                        </td>
+
+                        <td class="product-actions">
+                            @Html.ActionLink("Sửa", "Edit",
+                                new { id = item.ProductID },
+                                new { @class = "btn btn-warning btn-xs" })
+
+                            @Html.ActionLink("Chi tiết", "Details",
+                                new { id = item.ProductID },
+                                new { @class = "btn btn-info btn-xs" })
+
+                            @Html.ActionLink("Xóa", "Delete",
+                                new { id = item.ProductID },
+                                new { @class = "btn btn-danger btn-xs" })
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">
+                        Không tìm thấy sản phẩm phù hợp.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="product-pagination">
+        @if (Model.Products != null && Model.Products.PageCount > 1)
         {
-            page,
-            searchString = Model.SearchString,
-            minPrice = Model.MinPrice,
-            maxPrice = Model.MaxPrice
-        })
-    )
+            @Html.PagedListPager(Model.Products, page => Url.Action("Index", new
+            {
+                page,
+                searchString = Model.SearchString,
+                minPrice = Model.MinPrice,
+                maxPrice = Model.MaxPrice,
+                sortOrder = ViewBag.SortOrder
+            }))
+        }
+    </div>
+
+    @if (Model.Products != null)
+    {
+        <div class="product-count">
+            Trang @Model.Products.PageNumber / @Model.Products.PageCount
+        </div>
+    }
 </div>

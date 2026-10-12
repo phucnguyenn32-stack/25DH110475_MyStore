@@ -1,72 +1,223 @@
 ﻿@model _25DH110475_MyStore.Models.Product
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Sửa sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Edit</h2>
+<style>
+    .edit-product-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
+    .edit-product-heading {
+        margin-bottom: 22px;
+    }
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Product</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.ProductID)
+        .edit-product-heading h2 {
+            color: #263445;
+            font-weight: 700;
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.CategoryID, "CategoryID", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("CategoryID", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    .edit-product-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        padding: 28px;
+    }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ProductName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        .edit-product-card .control-label {
+            color: #344256;
+            font-weight: 600;
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ProductDecription, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ProductDecription, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ProductDecription, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        .edit-product-card .form-control {
+            border-radius: 6px;
+            min-height: 40px;
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ProductPrice, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ProductPrice, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ProductPrice, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    .current-image-box {
+        padding: 15px;
+        background: #f8fafc;
+        border: 1px solid #e4e9ef;
+        border-radius: 9px;
+    }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ProductImage, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ProductImage, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ProductImage, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    .current-image {
+        display: block;
+        max-width: 220px;
+        max-height: 220px;
+        object-fit: contain;
+        padding: 5px;
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
+    .upload-note {
+        display: block;
+        color: #7b8794;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .edit-product-actions {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #edf0f4;
+    }
+</style>
+
+<div class="edit-product-page">
+    <div class="edit-product-heading">
+        <h2>Chỉnh sửa sản phẩm</h2>
+        <p>Cập nhật thông tin hoặc thay đổi ảnh sản phẩm.</p>
     </div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
+    <div class="edit-product-card">
+        @using (Html.BeginForm("Edit", "Products", FormMethod.Post,
+            new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ProductID)
+
+            @Html.ValidationSummary(false, "",
+                new { @class = "text-danger" })
+
+            <div class="form-horizontal">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CategoryID, "Danh mục",
+                        new { @class = "control-label col-md-3" })
+
+                    <div class="col-md-9">
+                        @Html.DropDownList("CategoryID", null,
+                            "-- Chọn danh mục --",
+                            new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.CategoryID,
+                            "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProductName, "Tên sản phẩm",
+                        new { @class = "control-label col-md-3" })
+
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.ProductName,
+                            new
+                            {
+                                @class = "form-control",
+                                placeholder = "Nhập tên sản phẩm..."
+                            })
+
+                        @Html.ValidationMessageFor(model => model.ProductName,
+                            "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProductDecription, "Mô tả",
+                        new { @class = "control-label col-md-3" })
+
+                    <div class="col-md-9">
+                        @Html.TextAreaFor(model => model.ProductDecription,
+                            new
+                            {
+                                @class = "form-control",
+                                rows = "4",
+                                placeholder = "Nhập mô tả sản phẩm..."
+                            })
+
+                        @Html.ValidationMessageFor(model => model.ProductDecription,
+                            "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProductPrice, "Giá sản phẩm",
+                        new { @class = "control-label col-md-3" })
+
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.ProductPrice,
+                            new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                step = "any",
+                                placeholder = "Nhập giá sản phẩm"
+                            })
+
+                        @Html.ValidationMessageFor(model => model.ProductPrice,
+                            "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">
+                        Ảnh hiện tại
+                    </label>
+
+                    <div class="col-md-9">
+                        <div class="current-image-box">
+                            @if (!string.IsNullOrEmpty(Model.ProductImage))
+                            {
+                                <img src="@Url.Content(Model.ProductImage)"
+                                     alt="@Model.ProductName"
+                                     class="current-image" />
+
+                                <span class="upload-note">
+                                    Ảnh đang được sử dụng cho sản phẩm.
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Sản phẩm chưa có ảnh.
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="UploadImg">
+                        Thay ảnh mới
+                    </label>
+
+                    <div class="col-md-9">
+                        <input type="file"
+                               id="UploadImg"
+                               name="UploadImg"
+                               accept=".jpg,.jpeg,.png,.gif,.webp" />
+
+                        <span class="upload-note">
+                            Không bắt buộc. Hỗ trợ JPG, JPEG, PNG, GIF và WEBP.
+                            Để trống nếu muốn giữ ảnh hiện tại.
+                        </span>
+
+                        @Html.ValidationMessageFor(model => model.UploadImg,
+                            "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="edit-product-actions">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button type="submit" class="btn btn-success">
+                            Lưu thay đổi
+                        </button>
+
+                        @Html.ActionLink("Quay lại danh sách", "Index", null,
+                            new { @class = "btn btn-default" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @section Scripts {

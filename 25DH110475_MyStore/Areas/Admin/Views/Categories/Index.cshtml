@@ -1,35 +1,294 @@
 ﻿@model IEnumerable<_25DH110475_MyStore.Models.Category>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Index</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CategoryName)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.CategoryID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.CategoryID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.CategoryID })
-            </td>
-        </tr>
+<style>
+    .categories-page {
+        max-width: 1100px;
+        margin: 0 auto;
     }
 
-</table>
+    .categories-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
+
+        .categories-heading h2 {
+            color: #263445;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 6px;
+        }
+
+        .categories-heading p {
+            color: #7b8794;
+            margin-bottom: 0;
+        }
+
+    .categories-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .categories-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .categories-search {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        min-width: 240px;
+        max-width: 520px;
+    }
+
+        .categories-search .form-control,
+        .categories-toolbar .form-control {
+            height: 38px;
+            border-radius: 6px;
+        }
+
+    .categories-table-wrap {
+        overflow-x: auto;
+    }
+
+    .categories-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+        .categories-table thead {
+            background: #f8fafc;
+        }
+
+        .categories-table th {
+            color: #536273;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 15px 18px !important;
+            border-bottom: 1px solid #e4e9ef !important;
+        }
+
+        .categories-table td {
+            padding: 16px 18px !important;
+            vertical-align: middle !important;
+            color: #344256;
+        }
+
+        .categories-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+    .category-id {
+        color: #7b8794;
+        font-weight: 600;
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: #263445;
+    }
+
+    .category-actions {
+        white-space: nowrap;
+    }
+
+        .category-actions .btn {
+            margin: 2px;
+            border-radius: 5px;
+        }
+
+    .categories-footer {
+        padding: 15px 20px;
+        color: #7b8794;
+        border-top: 1px solid #edf0f4;
+        font-size: 13px;
+    }
+
+    .categories-empty {
+        text-align: center;
+        padding: 45px 20px !important;
+        color: #7b8794 !important;
+    }
+
+        .categories-empty strong {
+            display: block;
+            color: #344256;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+    @@media (max-width: 600px) {
+        .categories-toolbar {
+            align-items: stretch;
+        }
+
+        .categories-search {
+            min-width: 100%;
+        }
+
+        .categories-heading .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="categories-page">
+    <div class="categories-heading">
+        <div>
+            <h2>Quản lý danh mục</h2>
+            <p>Quản lý và phân loại sản phẩm trong cửa hàng.</p>
+        </div>
+
+        @Html.ActionLink(
+            "+ Thêm danh mục",
+            "Create",
+            null,
+            new { @class = "btn btn-success" })
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="categories-card">
+        <div class="categories-toolbar">
+            @using (Html.BeginForm("Index", "Categories", FormMethod.Get,
+                new { @class = "categories-search" }))
+            {
+                <input type="text"
+                       name="searchString"
+                       value="@ViewBag.SearchString"
+                       class="form-control"
+                       placeholder="Tìm theo tên danh mục..." />
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-search"></span>
+                    Tìm kiếm
+                </button>
+
+                @Html.ActionLink("Đặt lại", "Index", null,
+                    new { @class = "btn btn-default" })
+            }
+
+            <div>
+                @Html.DropDownList(
+                    "sortOrder",
+                    new SelectList(new[]
+                    {
+                        new { Value = "", Text = "Mặc định" },
+                        new { Value = "name_asc", Text = "Tên A - Z" },
+                        new { Value = "name_desc", Text = "Tên Z - A" },
+                        new { Value = "id_desc", Text = "Mã mới nhất" }
+                    }, "Value", "Text", ViewBag.SortOrder),
+                    new
+                    {
+                        @class = "form-control",
+                        onchange = "this.form.submit()",
+                        form = "categorySortForm"
+                    })
+            </div>
+
+            @using (Html.BeginForm("Index", "Categories", FormMethod.Get,
+                new { id = "categorySortForm" }))
+            {
+                <input type="hidden"
+                       name="searchString"
+                       value="@ViewBag.SearchString" />
+            }
+        </div>
+
+        <div class="categories-table-wrap">
+            <table class="table categories-table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">MÃ DANH MỤC</th>
+                        <th>TÊN DANH MỤC</th>
+                        <th style="width: 260px;">THAO TÁC</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="category-id">
+                                        #@item.CategoryID
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="category-name">
+                                        @item.CategoryName
+                                    </span>
+                                </td>
+
+                                <td class="category-actions">
+                                    @Html.ActionLink(
+                                        "Chi tiết",
+                                        "Details",
+                                        new { id = item.CategoryID },
+                                        new { @class = "btn btn-info btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Sửa",
+                                        "Edit",
+                                        new { id = item.CategoryID },
+                                        new { @class = "btn btn-warning btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Xóa",
+                                        "Delete",
+                                        new { id = item.CategoryID },
+                                        new { @class = "btn btn-danger btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="categories-empty">
+                                <strong>Không tìm thấy danh mục</strong>
+                                Thử từ khóa khác hoặc tạo danh mục mới.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="categories-footer">
+            Tổng số danh mục hiển thị: @(Model == null ? 0 : Model.Count())
+        </div>
+    </div>
+</div>

@@ -1,56 +1,70 @@
-﻿using _25DH110475_MyStore.Models;
+﻿using _25DH110475_MyStore.Areas.Admin.Filters;
+using _25DH110475_MyStore.Models;
 using PagedList;
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using PagedList;
+using static System.Web.Razor.Parser.SyntaxConstants;
 
 namespace _25DH110475_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class UsersController : Controller
     {
         private MystoreEntities db = new MystoreEntities();
 
         // GET: Admin/Users
-        public ActionResult Index(string searchString, int? page)
+        public ActionResult Index(string searchString, string sortOrder, int? page)
         {
             var users = db.Users.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrWhiteSpace(searchString))
             {
                 users = users.Where(u =>
                     u.Username.Contains(searchString) ||
-                    u.UserRole.Contains(searchString)
-                );
+                    (u.UserRole != null && u.UserRole.Contains(searchString)));
             }
 
-            users = users.OrderBy(u => u.Username);
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.UsernameSort = sortOrder == "username" ? "username_desc" : "username";
+            ViewBag.RoleSort = sortOrder == "role" ? "role_desc" : "role";
+            ViewBag.SearchString = searchString;
+
+            switch (sortOrder)
+            {
+                case "username_desc":
+                    users = users.OrderByDescending(u => u.Username);
+                    break;
+                case "role":
+                    users = users.OrderBy(u => u.UserRole);
+                    break;
+                case "role_desc":
+                    users = users.OrderByDescending(u => u.UserRole);
+                    break;
+                default:
+                    users = users.OrderBy(u => u.Username);
+                    break;
+            }
 
             int pageSize = 5;
             int pageNumber = page ?? 1;
 
-            ViewBag.SearchString = searchString;
-
             return View(users.ToPagedList(pageNumber, pageSize));
         }
 
-        // GET: Admin/Users/Details/5
+        // GET: Admin/Users/Details/username
         public ActionResult Details(string id)
         {
-            if (id == null)
-            {
+            if (string.IsNullOrEmpty(id))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             User user = db.Users.Find(id);
+
             if (user == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(user);
         }
 
@@ -60,98 +74,136 @@ namespace _25DH110475_MyStore.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Username,Password,UserRole")] User user)
+      
+// POST: Admin/Users/Create
+[HttpPost]
+[ValidateAntiForgeryToken]
+public ActionResult Create(
+    [Bind(Include = "Username,Password,UserRole")] User user)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                ModelState.AddModelError("Username", "Username không được để trống.");
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                ModelState.AddModelError("Password", "Password không được để trống.");
+            }
+
+            if (string.IsNullOrWhiteSpace(user.UserRole))
+            {
+                ModelState.AddModelError("UserRole", "Quyền tài khoản không được để trống.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+
+            if (db.Users.Any(u => u.Username == user.Username))
+            {
+                ModelState.AddModelError("Username", "Username đã tồn tại.");
+                return View(user);
+            }
+
+            try
             {
                 db.Users.Add(user);
-
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-                {
-                    var errors = ex.EntityValidationErrors
-                        .SelectMany(x => x.ValidationErrors)
-                        .Select(x => x.ErrorMessage);
-
-                    throw new Exception(string.Join(" | ", errors));
-                }
+                db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                foreach (var entityErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in entityErrors.ValidationErrors)
+                    {
+                        ModelState.AddModelError(
+                            validationError.PropertyName,
+                            validationError.ErrorMessage
+                        );
+                    }
+                }
 
-            return View(user);
+                return View(user);
+            }
         }
-        // GET: Admin/Users/Edit/5
+
+        // GET: Admin/Users/Edit/username
         public ActionResult Edit(string id)
         {
-            if (id == null)
-            {
+            if (string.IsNullOrEmpty(id))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
             User user = db.Users.Find(id);
 
             if (user == null)
-            {
                 return HttpNotFound();
-            }
 
             return View(user);
         }
 
-        // POST: Admin/Users/Edit/5
+        // POST: Admin/Users/Edit/username
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Username,Password,UserRole")] User user)
+        public ActionResult Edit(string id, string Password, string UserRole)
         {
+            if (string.IsNullOrEmpty(id))
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            User user = db.Users.Find(id);
+
+            if (user == null)
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
+                user.Password = Password;
+                user.UserRole = UserRole;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
             return View(user);
         }
+
+        // GET: Admin/Users/Delete/username
         public ActionResult Delete(string id)
         {
-            if (id == null)
-            {
+            if (string.IsNullOrEmpty(id))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             User user = db.Users.Find(id);
+
             if (user == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(user);
         }
 
-        // POST: Admin/Users/Delete/5
+        // POST: Admin/Users/Delete/username
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
             User user = db.Users.Find(id);
+
+            if (user == null)
+                return HttpNotFound();
+
             db.Users.Remove(user);
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 db.Dispose();
-            }
+
             base.Dispose(disposing);
         }
     }

@@ -1,81 +1,328 @@
 ﻿@model PagedList.IPagedList<_25DH110475_MyStore.Models.Order>
-
 @using PagedList.Mvc
 
 @{
     ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Quản lý đơn hàng</h2>
-
-@using (Html.BeginForm("Index", "Orders", FormMethod.Get))
-{
-    <input type="text"
-           name="searchString"
-           value="@ViewBag.SearchString"
-           class="form-control"
-           placeholder="Tên khách hàng, trạng thái, địa chỉ..." />
-
-    <br />
-
-    <input type="submit"
-           value="Tìm kiếm"
-           class="btn btn-primary" />
-}
-
-<br />
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-
-<table class="table">
-    <tr>
-        <th>Ngày đặt</th>
-        <th>Tổng tiền</th>
-        <th>Trạng thái</th>
-        <th>Địa chỉ giao</th>
-        <th>Khách hàng</th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalAmount)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentStatus)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.AddressDelivery)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.CustomerName)
-            </td>
-
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.OrderID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.OrderID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.OrderID })
-            </td>
-        </tr>
+<style>
+    .orders-page {
+        max-width: 1200px;
+        margin: 0 auto;
     }
-</table>
 
-@Html.PagedListPager(
-    Model,
-    page => Url.Action("Index", new
-    {
-        page,
-        searchString = ViewBag.SearchString
-    })
-)
+    .orders-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
+
+        .orders-heading h2 {
+            color: #263445;
+            font-weight: 700;
+            margin: 0 0 6px;
+        }
+
+        .orders-heading p {
+            color: #7b8794;
+            margin: 0;
+        }
+
+    .orders-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .orders-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .orders-search {
+        display: flex;
+        flex: 1;
+        gap: 8px;
+        max-width: 600px;
+    }
+
+        .orders-search .form-control {
+            height: 40px;
+            border-radius: 6px;
+        }
+
+    .orders-table-wrap {
+        overflow-x: auto;
+    }
+
+    .orders-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+        .orders-table thead {
+            background: #f8fafc;
+        }
+
+        .orders-table th {
+            color: #536273;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 15px !important;
+            border-bottom: 1px solid #e4e9ef !important;
+        }
+
+        .orders-table td {
+            padding: 15px !important;
+            vertical-align: middle !important;
+            color: #344256;
+        }
+
+        .orders-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+    .order-id {
+        color: #2859a5;
+        font-weight: 700;
+    }
+
+    .order-amount {
+        color: #198754;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 5px 9px;
+        background: #eef4ff;
+        color: #2859a5;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .order-address {
+        min-width: 180px;
+        max-width: 260px;
+        overflow-wrap: anywhere;
+    }
+
+    .order-actions {
+        white-space: nowrap;
+    }
+
+        .order-actions .btn {
+            margin: 2px;
+            border-radius: 5px;
+        }
+
+    .orders-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 15px 20px;
+        color: #7b8794;
+        border-top: 1px solid #edf0f4;
+        font-size: 13px;
+    }
+
+    .orders-pagination {
+        margin: 0;
+    }
+
+        .orders-pagination ul {
+            margin: 0;
+        }
+
+    .orders-empty {
+        text-align: center;
+        padding: 40px 20px !important;
+        color: #7b8794 !important;
+    }
+
+    @@media (max-width: 767px) {
+        .orders-toolbar {
+            padding: 15px;
+        }
+
+        .orders-search {
+            max-width: none;
+            width: 100%;
+        }
+
+            .orders-search .btn {
+                flex-shrink: 0;
+            }
+    }
+</style>
+
+<div class="orders-page">
+    <div class="orders-heading">
+        <div>
+            <h2>Quản lý đơn hàng</h2>
+            <p>Theo dõi thông tin, thanh toán và địa chỉ giao hàng.</p>
+        </div>
+
+        @Html.ActionLink(
+            "+ Thêm đơn hàng",
+            "Create",
+            null,
+            new { @class = "btn btn-success" })
+    </div>
+
+    <div class="orders-card">
+        <div class="orders-toolbar">
+            @using (Html.BeginForm("Index", "Orders", FormMethod.Get,
+                new { @class = "orders-search" }))
+            {
+                <input type="text"
+                       name="searchString"
+                       value="@ViewBag.SearchString"
+                       class="form-control"
+                       placeholder="Tìm khách hàng, trạng thái hoặc địa chỉ..." />
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-search"></span>
+                    Tìm kiếm
+                </button>
+
+                @Html.ActionLink(
+                    "Xóa lọc",
+                    "Index",
+                    null,
+                    new { @class = "btn btn-default" })
+            }
+
+            <span class="text-muted">
+                Tổng đơn hàng: @(Model == null ? 0 : Model.TotalItemCount)
+            </span>
+        </div>
+
+        <div class="orders-table-wrap">
+            <table class="table orders-table">
+                <thead>
+                    <tr>
+                        <th>MÃ ĐƠN</th>
+                        <th>KHÁCH HÀNG</th>
+                        <th>NGÀY ĐẶT</th>
+                        <th>TỔNG TIỀN</th>
+                        <th>TRẠNG THÁI THANH TOÁN</th>
+                        <th>ĐỊA CHỈ GIAO HÀNG</th>
+                        <th>THAO TÁC</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="order-id">
+                                        #@item.OrderID
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(item.Customer != null
+                                        ? item.Customer.CustomerName
+                                        : "Chưa có thông tin")
+                                </td>
+
+                                <td>
+                                    @item.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    <span class="order-amount">
+                                        @String.Format("{0:N0} đ", item.TotalAmount)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="order-status">
+                                        @(String.IsNullOrWhiteSpace(item.PaymentStatus)
+                                            ? "Chưa cập nhật"
+                                            : item.PaymentStatus)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="order-address">
+                                        @item.AddressDelivery
+                                    </div>
+                                </td>
+
+                                <td class="order-actions">
+                                    @Html.ActionLink(
+                                        "Chi tiết",
+                                        "Details",
+                                        new { id = item.OrderID },
+                                        new { @class = "btn btn-info btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Sửa",
+                                        "Edit",
+                                        new { id = item.OrderID },
+                                        new { @class = "btn btn-warning btn-sm" })
+
+                                    @Html.ActionLink(
+                                        "Xóa",
+                                        "Delete",
+                                        new { id = item.OrderID },
+                                        new { @class = "btn btn-danger btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="orders-empty">
+                                Không tìm thấy đơn hàng phù hợp.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="orders-footer">
+            <span>
+                Trang @(Model == null || Model.PageCount == 0
+                    ? 0
+                    : Model.PageNumber)
+                / @(Model == null ? 0 : Model.PageCount)
+            </span>
+
+            @if (Model != null && Model.PageCount > 1)
+            {
+                <div class="orders-pagination">
+                    @Html.PagedListPager(
+                        Model,
+                        page => Url.Action("Index", new
+                        {
+                            page = page,
+                            searchString = ViewBag.SearchString
+                        }))
+                </div>
+            }
+        </div>
+    </div>
+</div>

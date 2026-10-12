@@ -8,9 +8,11 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using _25DH110475_MyStore.Areas.Admin.Filters;
 
 namespace _25DH110475_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class OrdersController : Controller
     {
         private MystoreEntities db = new MystoreEntities();
@@ -127,7 +129,7 @@ namespace _25DH110475_MyStore.Areas.Admin.Controllers
             return View(order);
         }
 
-        // POST: Admin/Orders/Delete/5
+        // POST: Admin/Orders/Delete/5 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

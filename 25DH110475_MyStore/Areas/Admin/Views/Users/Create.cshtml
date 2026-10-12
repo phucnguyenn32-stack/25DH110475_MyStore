@@ -1,51 +1,73 @@
 ﻿@model _25DH110475_MyStore.Models.User
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Thêm tài khoản";
 }
 
-<h2>Create</h2>
+<h2>Thêm tài khoản</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>User</h4>
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
         <div class="form-group">
-            @Html.LabelFor(model => model.Username, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            @Html.LabelFor(m => m.Username, "Username",
+             new { @class = "control-label col-md-2" })
+
+            <div class="col-md-5">
+                @Html.EditorFor(m => m.Username,
+             new { htmlAttributes = new { @class = "form-control" } })
+
+                @Html.ValidationMessageFor(m => m.Username, "",
+             new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            @Html.LabelFor(m => m.Password, "Mật khẩu",
+             new { @class = "control-label col-md-2" })
+
+            <div class="col-md-5">
+                @Html.PasswordFor(m => m.Password,
+             new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(m => m.Password, "",
+             new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.UserRole, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UserRole, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger" })
+            @Html.LabelFor(m => m.UserRole, "Quyền tài khoản",
+             new { @class = "control-label col-md-2" })
+
+            <div class="col-md-5">
+                @Html.DropDownListFor(m => m.UserRole,
+             new SelectList(new[]
+             {
+                        new { Value = "U", Text = "User - Người dùng" },
+                        new { Value = "A", Text = "Admin - Quản trị viên" }
+             }, "Value", "Text"),
+             "-- Chọn quyền tài khoản --",
+             new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(m => m.UserRole, "",
+             new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="col-md-offset-2 col-md-5">
+                <input type="submit" value="Thêm tài khoản"
+                       class="btn btn-success" />
+
+                @Html.ActionLink("Quay lại", "Index", null,
+             new { @class = "btn btn-default" })
             </div>
         </div>
     </div>
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>

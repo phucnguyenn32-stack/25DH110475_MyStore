@@ -1,58 +1,181 @@
 ﻿@model _25DH110475_MyStore.Models.Product
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Details</h2>
+<style>
+    .details-page {
+        max-width: 950px;
+        margin: 0 auto;
+    }
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.ProductName)
-        </dt>
+    .details-heading {
+        margin-bottom: 22px;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.ProductName)
-        </dd>
+        .details-heading h2 {
+            color: #263445;
+            font-weight: 700;
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProductDecription)
-        </dt>
+        .details-heading p {
+            color: #7b8794;
+        }
 
-        <dd>
-            @Html.DisplayFor(model => model.ProductDecription)
-        </dd>
+    .details-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 12px;
+        padding: 28px;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProductPrice)
-        </dt>
+    .details-image-panel {
+        background: #f8fafc;
+        border: 1px solid #e4e9ef;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.ProductPrice)
-        </dd>
+    .details-image {
+        max-width: 100%;
+        max-height: 350px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProductImage)
-        </dt>
+    .details-image-placeholder {
+        color: #7b8794;
+        padding: 50px 10px;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.ProductImage)
-        </dd>
+    .details-info h3 {
+        color: #263445;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 20px;
+        overflow-wrap: anywhere;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Category.CategoryName)
-        </dt>
+    .details-row {
+        padding: 14px 0;
+        border-bottom: 1px solid #edf0f4;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Category.CategoryName)
-        </dd>
+    .details-label {
+        display: block;
+        color: #7b8794;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
 
-    </dl>
+    .details-value {
+        color: #344256;
+        font-size: 15px;
+        overflow-wrap: anywhere;
+    }
+
+    .details-price {
+        color: #168253;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .details-description {
+        white-space: pre-wrap;
+        line-height: 1.7;
+    }
+
+    .details-actions {
+        border-top: 1px solid #edf0f4;
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    @@media (max-width: 767px) {
+        .details-card {
+            padding: 16px;
+        }
+
+        .details-info {
+            margin-top: 25px;
+        }
+    }
+</style>
+
+<div class="details-page">
+    <div class="details-heading">
+        <h2>Chi tiết sản phẩm</h2>
+        <p>Xem thông tin đầy đủ của sản phẩm trong cửa hàng.</p>
+    </div>
+
+    <div class="details-card">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="details-image-panel">
+                    @if (!string.IsNullOrEmpty(Model.ProductImage))
+                    {
+                        <img src="@Url.Content(Model.ProductImage)"
+                             alt="@Model.ProductName"
+                             class="details-image" />
+                    }
+                    else
+                    {
+                        <div class="details-image-placeholder">
+                            Sản phẩm chưa có hình ảnh.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-7 details-info">
+                <h3>@Model.ProductName</h3>
+
+                <div class="details-row">
+                    <span class="details-label">Mã sản phẩm</span>
+                    <div class="details-value">@Model.ProductID</div>
+                </div>
+
+                <div class="details-row">
+                    <span class="details-label">Danh mục</span>
+                    <div class="details-value">
+                        @(Model.Category != null
+                            ? Model.Category.CategoryName
+                            : "Chưa phân loại")
+                    </div>
+                </div>
+
+                <div class="details-row">
+                    <span class="details-label">Giá bán</span>
+                    <div class="details-price">
+                        @string.Format("{0:N0}", Model.ProductPrice)
+                    </div>
+                </div>
+
+                <div class="details-row">
+                    <span class="details-label">Mô tả sản phẩm</span>
+                    <div class="details-value details-description">
+                        @(string.IsNullOrWhiteSpace(Model.ProductDecription)
+                            ? "Chưa có mô tả."
+                            : Model.ProductDecription)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-actions">
+            @Html.ActionLink("Chỉnh sửa", "Edit",
+                new { id = Model.ProductID },
+                new { @class = "btn btn-warning" })
+
+            @Html.ActionLink("Xóa sản phẩm", "Delete",
+                new { id = Model.ProductID },
+                new { @class = "btn btn-danger" })
+
+            @Html.ActionLink("Quay lại danh sách", "Index", null,
+                new { @class = "btn btn-default" })
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ProductID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
